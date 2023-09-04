@@ -1,5 +1,6 @@
 package io.github.rachirib.liquiguice;
 
+import static io.github.rachirib.liquiguice.GuiceLiquibaseConfig.Builder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
@@ -8,7 +9,6 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static io.github.rachirib.liquiguice.GuiceLiquibaseConfig.Builder;
 
 import com.google.common.collect.Lists;
 import com.jparams.verifier.tostring.NameStyle;

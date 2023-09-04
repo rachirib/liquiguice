@@ -10,6 +10,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
+import io.github.rachirib.liquiguice.annotation.GuiceLiquibaseConfiguration;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,7 +24,6 @@ import org.hsqldb.jdbc.JDBCDataSource;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import io.github.rachirib.liquiguice.annotation.GuiceLiquibaseConfiguration;
 
 @Disabled
 public class Example {

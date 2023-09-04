@@ -7,6 +7,7 @@ import static java.util.Objects.nonNull;
 import com.google.common.util.concurrent.Monitor;
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
+import io.github.rachirib.liquiguice.annotation.GuiceLiquibaseConfiguration;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Objects;
@@ -27,7 +28,6 @@ import liquibase.integration.commandline.LiquibaseCommandLineConfiguration;
 import liquibase.util.LiquibaseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import io.github.rachirib.liquiguice.annotation.GuiceLiquibaseConfiguration;
 
 
 public final class GuiceLiquibaseModule extends AbstractModule {

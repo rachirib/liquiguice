@@ -16,7 +16,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import io.github.rachirib.liquiguice.annotation.GuiceLiquibaseConfiguration;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.Monitor;
 import com.google.inject.AbstractModule;
@@ -29,6 +28,7 @@ import com.google.inject.Provides;
 import com.google.inject.Stage;
 import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
+import io.github.rachirib.liquiguice.annotation.GuiceLiquibaseConfiguration;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -36,7 +36,6 @@ import java.sql.SQLException;
 import java.util.UUID;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
-
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.exception.DatabaseException;
