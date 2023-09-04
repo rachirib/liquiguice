@@ -37,29 +37,14 @@ task javadocsJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
-signing {
-    sign publishing.publications
+artifacts {
+    archives jar, javadocsJar, sourcesJar
 }
 
 publishing {
     publications {
-        GuiceLiquibase(MavenPublication) {
-            from components.java
-            groupId appGroup
-            artifactId appName
-            version appVersion
-            artifacts = [jar, sourcesJar, javadocsJar]
-        }
-    }
-}
-publishing {
-    publications {
         mavenJava(MavenPublication) {
             from components.java
-            groupId appGroup
-            artifactId appName
-            version appVersion
-            artifacts = [jar, sourcesJar, javadocsJar]
 
             pom {
                 name = appName
@@ -91,13 +76,14 @@ publishing {
 nexusPublishing {
     repositories {
         sonatype {
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-            username = project.findProperty('sonatypeUsername') ?: System.getenv("SONATYPE_USER")
-            password = project.findProperty('sonatypePassword') ?: System.getenv("SONATYPE_PASSWORD")
-            stagingProfileId = project.findProperty('sonatypeStagingProfileId') ?: System.getenv("SONATYPE_STAGING_PROFILE_ID")
+            nexusUrl = uri("https://s01.oss.sonatype.org/service/local/")
+            snapshotRepositoryUrl= uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
         }
     }
+}
+
+signing {
+    sign publishing.publications.mavenJava
 }
 
 repositories {
