@@ -1,0 +1,155 @@
+plugins {
+    id 'java'
+    id 'signing'
+    id 'checkstyle'
+    id("info.solidsoft.pitest") version "1.9.11"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.spotbugs") version "5.1.3"
+    id 'io.github.gradle-nexus.publish-plugin' version '1.3.0'
+    id 'pl.allegro.tech.build.axion-release' version '1.15.1'
+    id 'maven-publish'
+}
+
+defaultTasks 'clean', 'build', 'jar', 'publishToMavenLocal'
+
+def appGroup = 'io.github.rachirib'
+def appVersion = scmVersion.version
+def appName = rootProject.name
+
+project.group = appGroup
+project.version = appVersion
+
+compileJava {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+    options.encoding = 'UTF-8'
+}
+
+build.dependsOn 'pitest'
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocsJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+signing {
+    sign publishing.publications
+}
+
+publishing {
+    publications {
+        GuiceLiquibase(MavenPublication) {
+            from components.java
+            groupId appGroup
+            artifactId appName
+            version appVersion
+            artifacts = [jar, sourcesJar, javadocsJar]
+        }
+    }
+}
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            groupId appGroup
+            artifactId appName
+            version appVersion
+            artifacts = [jar, sourcesJar, javadocsJar]
+
+            pom {
+                name = appName
+                description = 'Guice module for Liquibase'
+                url = 'https://github.com/rachirib/liquiguice'
+                licenses {
+                    license {
+                        name = 'Apache-2.0'
+                        url = 'https://raw.githubusercontent.com/rachirib/liquiguice/master/LICENSE'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'rachirib'
+                        name = 'Ricardo Chiriboga'
+                        email = 'rachirib@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:github.com/rachirib/liquiguice.git'
+                    developerConnection = 'scm:git:ssh://github.com/rachirib/liquiguice.git'
+                    url = 'https://github.com/rachirib/liquiguice'
+                }
+            }
+        }
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+            username = project.findProperty('sonatypeUsername') ?: System.getenv("SONATYPE_USER")
+            password = project.findProperty('sonatypePassword') ?: System.getenv("SONATYPE_PASSWORD")
+            stagingProfileId = project.findProperty('sonatypeStagingProfileId') ?: System.getenv("SONATYPE_STAGING_PROFILE_ID")
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'com.google.inject', name: 'guice', version: '5.0.1'
+    implementation group: 'org.liquibase', name: 'liquibase-core', version: '4.20.0'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.7'
+
+    testRuntimeOnly group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.7'
+
+    testImplementation(platform( group: "org.junit", name: "junit-bom", version: "5.10.0"))
+    testImplementation group: 'org.junit.platform', name: 'junit-platform-launcher'
+    testImplementation group:'org.junit.jupiter', name:'junit-jupiter-api'
+    testImplementation group:'org.junit.jupiter', name:'junit-jupiter-engine'
+
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '5.+'
+    testImplementation group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
+    testImplementation group: 'org.hsqldb', name: 'hsqldb', version: '2.5.2'
+    testImplementation group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '3.15.1'
+    testImplementation group: 'com.jparams', name: 'to-string-verifier', version: '1.+'
+    testImplementation "com.github.spotbugs:spotbugs-annotations:${spotbugs.toolVersion.get()}"
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << '-Xlint:unchecked'
+    options.deprecation = true
+}
+
+checkstyle {
+    toolVersion = '10.12.3'
+    ignoreFailures = false
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        xml.required = false
+        html.required = true
+    }
+}
+
+pitest {
+    threads = 2
+    junit5PluginVersion = '1.2.0'
+    pitestVersion = '1.14.4'
+}
+spotbugs {
+    excludeFilter = file('config/spotbugs/exclude.xml')
+}
