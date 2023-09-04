@@ -7,7 +7,7 @@ import static java.util.Objects.nonNull;
 import com.google.common.util.concurrent.Monitor;
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
-import io.github.rachirib.liquiguice.annotation.GuiceLiquibaseConfiguration;
+import io.github.rachirib.liquiguice.annotation.LiquiGuiceConfiguration;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Objects;
@@ -30,10 +30,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public final class GuiceLiquibaseModule extends AbstractModule {
+public final class LiquiGuiceModule extends AbstractModule {
 
-  private static final Key<GuiceLiquibaseConfig> LIQUIBASE_CONFIG_KEY =
-      Key.get(GuiceLiquibaseConfig.class, GuiceLiquibaseConfiguration.class);
+  private static final Key<LiquiGuiceConfig> LIQUIBASE_CONFIG_KEY =
+      Key.get(LiquiGuiceConfig.class, LiquiGuiceConfiguration.class);
 
   @Override
   protected void configure() {
@@ -60,11 +60,11 @@ public final class GuiceLiquibaseModule extends AbstractModule {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GuiceLiquibaseEngine.class);
     private final Monitor monitor;
-    private final GuiceLiquibaseConfig config;
+    private final LiquiGuiceConfig config;
     private final AtomicBoolean updated;
 
     @Inject
-    private GuiceLiquibaseEngine(@GuiceLiquibaseConfiguration GuiceLiquibaseConfig config) {
+    private GuiceLiquibaseEngine(@LiquiGuiceConfiguration LiquiGuiceConfig config) {
       LOGGER.info("Creating GuiceLiquibase for Liquibase {}", LiquibaseUtil.getBuildVersion());
       checkArgument(!config.getConfigs().isEmpty(), "Injected configuration set is empty.");
       this.config = config;

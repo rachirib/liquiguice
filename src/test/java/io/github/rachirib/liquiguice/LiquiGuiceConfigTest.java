@@ -1,6 +1,6 @@
 package io.github.rachirib.liquiguice;
 
-import static io.github.rachirib.liquiguice.GuiceLiquibaseConfig.Builder;
+import static io.github.rachirib.liquiguice.LiquiGuiceConfig.Builder;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
@@ -19,12 +19,12 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import org.hsqldb.jdbc.JDBCDataSource;
 import org.junit.jupiter.api.Test;
 
-public class GuiceLiquibaseConfigTest {
+public class LiquiGuiceConfigTest {
 
 
   @Test
   public void shouldCreateEmptyConfigs() throws Exception {
-    GuiceLiquibaseConfig config = Builder.of()
+    LiquiGuiceConfig config = Builder.of()
         .build();
 
     assertThat(config, notNullValue());
@@ -35,7 +35,7 @@ public class GuiceLiquibaseConfigTest {
   public void shouldCreateConfigForSingleLiquibaseConfig() throws Exception {
     LiquibaseConfig liquibaseConfig = LiquibaseConfig.Builder.of(mock(DataSource.class))
         .build();
-    GuiceLiquibaseConfig config = Builder.of(liquibaseConfig)
+    LiquiGuiceConfig config = Builder.of(liquibaseConfig)
         .build();
 
     assertThat(config, notNullValue());
@@ -49,7 +49,7 @@ public class GuiceLiquibaseConfigTest {
     LiquibaseConfig secondLiquibaseConfig = LiquibaseConfig.Builder.of(mock(DataSource.class))
         .build();
     List<LiquibaseConfig> configs = Lists.newArrayList(firstLiquibaseConfig, secondLiquibaseConfig);
-    GuiceLiquibaseConfig config = Builder.of()
+    LiquiGuiceConfig config = Builder.of()
         .withLiquibaseConfigs(configs)
         .build();
 
@@ -101,7 +101,7 @@ public class GuiceLiquibaseConfigTest {
 
   @Test
   public void shouldPassEqualsAndHashCodeContracts() throws Exception {
-    EqualsVerifier.forClass(GuiceLiquibaseConfig.class)
+    EqualsVerifier.forClass(LiquiGuiceConfig.class)
         .usingGetClass()
         .verify();
   }
@@ -115,7 +115,7 @@ public class GuiceLiquibaseConfigTest {
 
   @Test
   public void verifyToString() throws Exception {
-    ToStringVerifier.forClass(GuiceLiquibaseConfig.class)
+    ToStringVerifier.forClass(LiquiGuiceConfig.class)
             .withClassName(NameStyle.SIMPLE_NAME).verify();
   }
 }

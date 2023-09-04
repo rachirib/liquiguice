@@ -9,11 +9,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
 
-public final class GuiceLiquibaseConfig {
+public final class LiquiGuiceConfig {
 
   private final Set<LiquibaseConfig> configs;
 
-  private GuiceLiquibaseConfig(Collection<LiquibaseConfig> configs) {
+  private LiquiGuiceConfig(Collection<LiquibaseConfig> configs) {
     this.configs = ImmutableSet.copyOf(configs);
   }
 
@@ -29,7 +29,7 @@ public final class GuiceLiquibaseConfig {
     if (obj == null || getClass() != obj.getClass()) {
       return false;
     }
-    GuiceLiquibaseConfig that = (GuiceLiquibaseConfig) obj;
+    LiquiGuiceConfig that = (LiquiGuiceConfig) obj;
     return Objects.equals(configs, that.configs);
   }
 
@@ -40,7 +40,7 @@ public final class GuiceLiquibaseConfig {
 
   @Override
   public String toString() {
-    return new StringJoiner(", ", GuiceLiquibaseConfig.class.getSimpleName() + "[", "]")
+    return new StringJoiner(", ", LiquiGuiceConfig.class.getSimpleName() + "[", "]")
         .add("configs=" + configs)
         .toString();
   }
@@ -108,8 +108,8 @@ public final class GuiceLiquibaseConfig {
      *
      * @return new <code>GuiceLiquibaseConfig</code> object
      */
-    public final GuiceLiquibaseConfig build() {
-      return new GuiceLiquibaseConfig(configs);
+    public final LiquiGuiceConfig build() {
+      return new LiquiGuiceConfig(configs);
     }
 
     @Override

@@ -10,7 +10,7 @@
         excluding this as this is a database test with Mockito there is no open database connections
     -->
     <Match>
-        <Class name="io.github.rachirib.liquiguice.GuiceLiquibaseModuleTest" />
+        <Class name="io.github.rachirib.liquiguice.LiquiGuiceModuleTest" />
         <Or>
             <Method name="~.*lambda\$shouldNotExecuteUpdateSecondTime.*" />
             <Method name="~.*lambda\$shouldThrowExceptionWhenProblemOccurredDuring.*" />

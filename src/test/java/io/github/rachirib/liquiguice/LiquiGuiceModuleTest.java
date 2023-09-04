@@ -28,7 +28,7 @@ import com.google.inject.Provides;
 import com.google.inject.Stage;
 import com.jparams.verifier.tostring.NameStyle;
 import com.jparams.verifier.tostring.ToStringVerifier;
-import io.github.rachirib.liquiguice.annotation.GuiceLiquibaseConfiguration;
+import io.github.rachirib.liquiguice.annotation.LiquiGuiceConfiguration;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -48,7 +48,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class GuiceLiquibaseModuleTest {
+public class LiquiGuiceModuleTest {
 
   private DatabaseFactory orgDatabaseFactory;
 
@@ -74,7 +74,7 @@ public class GuiceLiquibaseModuleTest {
   @Test
   public void shouldExecuteLiquibaseUpdateWithSingleConfiguration() throws Exception {
     Guice.createInjector(
-        new GuiceLiquibaseModule(),
+        new LiquiGuiceModule(),
         Fixtures.SINGLE_DATA_SOURCE_MODULE);
 
     try (Connection connection = Fixtures.SINGLE_DATA_SOURCE.getConnection()) {
@@ -96,7 +96,7 @@ public class GuiceLiquibaseModuleTest {
   @Test
   public void shouldExecuteLiquibaseUpdateWithMultipleConfigurations() throws Exception {
     Guice.createInjector(
-        new GuiceLiquibaseModule(),
+        new LiquiGuiceModule(),
         Fixtures.MULTI_DATA_SOURCE_MODULE);
 
     try (Connection connection = Fixtures.MULTI_DATA_SOURCE.getConnection()) {
@@ -118,14 +118,14 @@ public class GuiceLiquibaseModuleTest {
     DataSource dataSource = mock(DataSource.class);
 
     Guice.createInjector(
-        new GuiceLiquibaseModule(),
+        new LiquiGuiceModule(),
         new AbstractModule() {
 
           @Override
           protected void configure() {
-            bind(GuiceLiquibaseConfig.class)
-                .annotatedWith(GuiceLiquibaseConfiguration.class)
-                .toInstance(GuiceLiquibaseConfig.Builder
+            bind(LiquiGuiceConfig.class)
+                .annotatedWith(LiquiGuiceConfiguration.class)
+                .toInstance(LiquiGuiceConfig.Builder
                     .of(LiquibaseConfig.Builder
                         .of(dataSource).withShouldRun(false)
                         .build())
@@ -139,12 +139,12 @@ public class GuiceLiquibaseModuleTest {
   @Test
   public void shouldNotExecuteUpdateSecondTime() throws Exception {
     Injector injector = Guice.createInjector(
-        Stage.DEVELOPMENT, new GuiceLiquibaseModule(), Fixtures.DATA_SOURCE_MODULE);
+        Stage.DEVELOPMENT, new LiquiGuiceModule(), Fixtures.DATA_SOURCE_MODULE);
 
-    injector.getInstance(GuiceLiquibaseModule.LiquibaseEngine.class)
+    injector.getInstance(LiquiGuiceModule.LiquibaseEngine.class)
         .process();
 
-    injector.getInstance(Key.get(GuiceLiquibaseConfig.class, GuiceLiquibaseConfiguration.class))
+    injector.getInstance(Key.get(LiquiGuiceConfig.class, LiquiGuiceConfiguration.class))
         .getConfigs()
         .forEach(liquibaseConfig -> {
           try {
@@ -159,23 +159,23 @@ public class GuiceLiquibaseModuleTest {
   @Test
   public void shouldThrowExceptionForNotDefinedRequiredBinding() {
     CreationException e = assertThrows(CreationException.class,
-            () -> Guice.createInjector(new GuiceLiquibaseModule()));
+            () -> Guice.createInjector(new LiquiGuiceModule()));
     assertThat(e, notNullValue());
     assertThat(e.getMessage(), containsString("Unable to create injector"));
     assertThat(e.getMessage(), containsString("No implementation for"
-            + " GuiceLiquibaseConfig annotated with"
-            + " @GuiceLiquibaseConfiguration() was bound"));
+            + " LiquiGuiceConfig annotated with"
+            + " @LiquiGuiceConfiguration() was bound"));
   }
 
   @Test
   public void shouldThrowExceptionForNullConfigValue() {
     CreationException e = assertThrows(CreationException.class, () -> {
-      Guice.createInjector(new GuiceLiquibaseModule(),
+      Guice.createInjector(new LiquiGuiceModule(),
         new AbstractModule() {
           @Override
           protected void configure() {
-            bind(GuiceLiquibaseConfig.class)
-                    .annotatedWith(GuiceLiquibaseConfiguration.class)
+            bind(LiquiGuiceConfig.class)
+                    .annotatedWith(LiquiGuiceConfiguration.class)
                     .toInstance(null);
           }
         });
@@ -188,14 +188,14 @@ public class GuiceLiquibaseModuleTest {
   @Test
   public void shouldThrowExceptionForEmptyConfigurationSet() {
     CreationException e = assertThrows(CreationException.class, () -> {
-      Guice.createInjector(new GuiceLiquibaseModule(),
+      Guice.createInjector(new LiquiGuiceModule(),
         new AbstractModule() {
           @Override
           protected void configure() {
-            bind(GuiceLiquibaseConfig.class)
-                    .annotatedWith(GuiceLiquibaseConfiguration.class)
+            bind(LiquiGuiceConfig.class)
+                    .annotatedWith(LiquiGuiceConfiguration.class)
                     .toInstance(
-                            GuiceLiquibaseConfig.Builder
+                            LiquiGuiceConfig.Builder
                                     .of()
                                     .build());
           }
@@ -212,13 +212,13 @@ public class GuiceLiquibaseModuleTest {
     when(dataSource.getConnection()).thenReturn(null);
 
     CreationException e = assertThrows(CreationException.class, () -> {
-      Guice.createInjector(new GuiceLiquibaseModule(),
+      Guice.createInjector(new LiquiGuiceModule(),
         new AbstractModule() {
           @Override
           protected void configure() {
-            bind(GuiceLiquibaseConfig.class)
-                    .annotatedWith(GuiceLiquibaseConfiguration.class)
-                    .toInstance(GuiceLiquibaseConfig.Builder.of()
+            bind(LiquiGuiceConfig.class)
+                    .annotatedWith(LiquiGuiceConfiguration.class)
+                    .toInstance(LiquiGuiceConfig.Builder.of()
                             .withLiquibaseConfig(
                                     LiquibaseConfig.Builder.of(dataSource).build())
                             .build());
@@ -240,14 +240,14 @@ public class GuiceLiquibaseModuleTest {
       when(connection.getMetaData()).thenThrow(new SQLException("My SQLException."));
 
       Guice.createInjector(
-        new GuiceLiquibaseModule(),
+        new LiquiGuiceModule(),
         new AbstractModule() {
 
           @Override
           protected void configure() {
-            bind(GuiceLiquibaseConfig.class)
-                    .annotatedWith(GuiceLiquibaseConfiguration.class)
-                    .toInstance(GuiceLiquibaseConfig.Builder
+            bind(LiquiGuiceConfig.class)
+                    .annotatedWith(LiquiGuiceConfiguration.class)
+                    .toInstance(LiquiGuiceConfig.Builder
                             .of(LiquibaseConfig.Builder
                                     .of(dataSource)
                                     .build())
@@ -279,11 +279,11 @@ public class GuiceLiquibaseModuleTest {
       doThrow(new DatabaseException("Problem - Liquibase.")).when(database).rollback();
       DatabaseFactory.setInstance(databaseFactory);
 
-      Guice.createInjector(new GuiceLiquibaseModule(), new AbstractModule() {
+      Guice.createInjector(new LiquiGuiceModule(), new AbstractModule() {
         @Override
         protected void configure() {
-          bind(GuiceLiquibaseConfig.class).annotatedWith(GuiceLiquibaseConfiguration.class)
-                  .toInstance(GuiceLiquibaseConfig.Builder
+          bind(LiquiGuiceConfig.class).annotatedWith(LiquiGuiceConfiguration.class)
+                  .toInstance(LiquiGuiceConfig.Builder
                           .of(LiquibaseConfig.Builder.of(dataSource).build())
                           .build());
         }
@@ -303,9 +303,9 @@ public class GuiceLiquibaseModuleTest {
     EqualsVerifier.forClass(getGuiceLiquibaseEngineClass())
         .usingGetClass()
         .withPrefabValues(
-            GuiceLiquibaseConfig.class,
-            GuiceLiquibaseConfig.Builder.of().build(),
-            GuiceLiquibaseConfig.Builder.of(
+            LiquiGuiceConfig.class,
+            LiquiGuiceConfig.Builder.of().build(),
+            LiquiGuiceConfig.Builder.of(
                 LiquibaseConfig.Builder.of(Fixtures.SINGLE_DATA_SOURCE)
                     .build())
                 .build())
@@ -323,10 +323,10 @@ public class GuiceLiquibaseModuleTest {
   }
 
   @SuppressWarnings("unchecked")
-  private Class<GuiceLiquibaseModule.LiquibaseEngine> getGuiceLiquibaseEngineClass() {
+  private Class<LiquiGuiceModule.LiquibaseEngine> getGuiceLiquibaseEngineClass() {
     try {
-      return (Class<GuiceLiquibaseModule.LiquibaseEngine>)
-          Class.forName("io.github.rachirib.liquiguice.GuiceLiquibaseModule$GuiceLiquibaseEngine");
+      return (Class<LiquiGuiceModule.LiquibaseEngine>)
+          Class.forName("io.github.rachirib.liquiguice.LiquiGuiceModule$GuiceLiquibaseEngine");
     } catch (ClassNotFoundException exception) {
       fail(exception.getMessage());
       throw new IllegalStateException(exception);
@@ -351,9 +351,9 @@ public class GuiceLiquibaseModuleTest {
 
       @Provides
       @Singleton
-      @GuiceLiquibaseConfiguration
-      private GuiceLiquibaseConfig createConfig() {
-        return GuiceLiquibaseConfig.Builder.of(
+      @LiquiGuiceConfiguration
+      private LiquiGuiceConfig createConfig() {
+        return LiquiGuiceConfig.Builder.of(
             LiquibaseConfig.Builder.of(createJdbcDataSource())
                 .build())
             .build();
@@ -367,9 +367,9 @@ public class GuiceLiquibaseModuleTest {
 
       @Provides
       @Singleton
-      @GuiceLiquibaseConfiguration
-      private GuiceLiquibaseConfig createConfig() {
-        return GuiceLiquibaseConfig.Builder.of(
+      @LiquiGuiceConfiguration
+      private LiquiGuiceConfig createConfig() {
+        return LiquiGuiceConfig.Builder.of(
             LiquibaseConfig.Builder.of(SINGLE_DATA_SOURCE)
                 .build())
             .build();
@@ -383,10 +383,10 @@ public class GuiceLiquibaseModuleTest {
 
       @Provides
       @Singleton
-      @GuiceLiquibaseConfiguration
-      private GuiceLiquibaseConfig createConfig() {
+      @LiquiGuiceConfiguration
+      private LiquiGuiceConfig createConfig() {
         ClassLoader classLoader = getClass().getClassLoader();
-        return GuiceLiquibaseConfig.Builder
+        return LiquiGuiceConfig.Builder
             .of()
             .withLiquibaseConfig(
                 LiquibaseConfig.Builder.of(MULTI_DATA_SOURCE)

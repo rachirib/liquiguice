@@ -10,7 +10,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
-import io.github.rachirib.liquiguice.annotation.GuiceLiquibaseConfiguration;
+import io.github.rachirib.liquiguice.annotation.LiquiGuiceConfiguration;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -41,7 +41,7 @@ public class Example {
   @Test
   public void shouldExecuteLiquibaseMigration() throws Exception {
     Injector injector = Guice.createInjector(
-        new GuiceLiquibaseModule(), new MyLiquibaseConfigModule());
+        new LiquiGuiceModule(), new MyLiquibaseConfigModule());
 
     Set<String> createdTables = getTablesFromDataSource(injector.getInstance(DataSource.class));
     assertThat(createdTables, hasSize(3));
@@ -77,11 +77,11 @@ public class Example {
       return dataSource;
     }
 
-    @GuiceLiquibaseConfiguration
+    @LiquiGuiceConfiguration
     @Provides
     @Inject
-    private GuiceLiquibaseConfig createLiquibaseConfig(DataSource dataSource) {
-      return GuiceLiquibaseConfig.Builder
+    private LiquiGuiceConfig createLiquibaseConfig(DataSource dataSource) {
+      return LiquiGuiceConfig.Builder
           .of(LiquibaseConfig.Builder.of(dataSource)
               .withChangeLogPath("liquibase/exampleChangeLog.xml")
               .withResourceAccessor(new ClassLoaderResourceAccessor(getClass().getClassLoader()))
